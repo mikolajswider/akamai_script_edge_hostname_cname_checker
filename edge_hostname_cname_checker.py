@@ -6,12 +6,14 @@ import requests
 from akamai.edgegrid import EdgeGridAuth, EdgeRc
 from urllib.parse import urljoin
 import re
+
 """
-The edge_hostname_cname_checker.py script finds all property hostnames CNAMEd to an input edge hostname, for a given Customer Account. The script uses edgegrid for python and dnspython libraries. There are four inputs: the edge hostname, the account ID, the .edgerc file path and finally the section name containing your API credentials.
+The edge_hostname_cname_checker.py script finds all property hostnames CNAMEd to an input Edge Hostname, within a Customer Account. The script uses edgegrid for python and dnspython libraries. There are four inputs: the Edge Hostname, the Account Switchkey, the .edgerc File Path and finally the Section Name containing your API credentials.
 Contributors:
 Miko (mswider@akamai.com) as Chief Programmer
 edge_hostname_cname_checker.py v1.0
 """
+
 def get_properties(contractId, groupId, path, section, switchkey):
     # setting up authentication as in https://github.com/akamai/AkamaiOPEN-edgegrid-python
     dict_list=[]
@@ -66,8 +68,8 @@ def get_property_hostnames(latestVersion, propertyId, contractId, groupId, path,
         property_hostnames_list=property_hostnames_list+[item['cnameFrom']]
     return(property_hostnames_list)
 def main():
-    print("\nThe edge_hostname_cname_checker.py script finds all property hostnames CNAMEd to an input edge hostname, for a given Customer Account. The script uses edgegrid for python and dnspython libraries.")
-    print("There are four inputs: the edge hostname, the account ID, the .edgerc file path and finally the section name containing your API credentials.")
+    print("\nThe edge_hostname_cname_checker.py script finds all property hostnames CNAMEd to an input edge hostname, within a Customer Account. The script uses edgegrid for python and dnspython libraries.")
+    print("There are four inputs: the Edge Hostname, the Account Switchkey, the .edgerc File Path and finally the Section Name containing your API credentials.")
     print("Contributors:")
     print("Miko (mswider) as Chief Programmer")
     print("edge_hostname_cname_checker.py v1.0")
@@ -79,6 +81,10 @@ def main():
     nb_contracts = 0
     nb_properties = 0
     nb_hostnames = 0
+    warning = False
+    nx_domain_list=[]
+    unknown_list=[]
+    timeout_list=[]
     # defining inputs
     edge_hostname = input("\nProvide the Edge Hostname: ")
     switchkey = input("\nProvide the customer's Account ID: ")
@@ -117,20 +123,43 @@ def main():
         try:
             output = (dns.resolver.query(hostname,'CNAME', raise_on_no_answer=False))
         except dns.exception.Timeout:
-            print('The '+hostname+' resolution failed with the following exception: dns.exception.Timeout')
+            warning = True
+            timeout_list = timeout_list + [hostname]
         except dns.rdatatype.UnknownRdatatype:
-            print('The '+hostname+' resolution failed with the following exception: dns.rdatatype.UnknownRdatatype')
+            warning = True
+            unknown_list = unknown_list + [hostname]
         except dns.resolver.NXDOMAIN:
-            print('The '+hostname+' resolution failed with the following exception: dns.resolver.NXDOMAIN')
+            warning = True
+            nx_domain_list = nx_domain_list + [hostname]
         else:
             if edge_hostname in str(output.rrset):
                 answer_list =  answer_list + [hostname]
-    if answer_list == []:
-        print("There are no property hostnames CNAMEd to " + str(edge_hostname))
-        print("\n")
+    # Displaying hostnames for which DNS resolution failed
+    if timeout_list != []:
+        print('The DNS resolution failed with the exception dns.exception.Timeout for:')
+        print(*timeout_list, sep = "\n")
+    if unknown_list != []:
+        print('The DNS resolution failed with the exception dns.rdatatype.UnknownRdatatype for:')
+        print(*unknown_list, sep = "\n")
+    if nx_domain_list != []:
+        print('The DNS resolution failed with the exception dns.resolver.NXDOMAIN for:')
+        print(*nx_domain_list, sep = "\n")
+    # Displaying final answers
+    if warning:
+        if answer_list == []:
+            print("\nThe DNS (CNAME record) resolution was not successfull for the records printed above. Appart from these, there are no property hostnames CNAMEd to " + str(edge_hostname)+".")
+            print("\n")
+        else:
+            print("\nThe DNS (CNAME record) resolution was not successfull for the records printed above. Appart from these, the following property hostname(s) is/are CNAMEd to " + str(edge_hostname) + ":")
+            print(*answer_list, sep = "\n")
+            print("\n")
     else:
-        print("The following property hostnames are CNAMEd to " + str(edge_hostname) + ":")
-        print(*answer_list, sep = "\n")
-        print("\n")
+        if answer_list == []:
+            print("There are no property hostnames CNAMEd to " + str(edge_hostname)+".")
+            print("\n")
+        else:
+            print("The following property hostname(s) is/are CNAMEd to " + str(edge_hostname) + ":")
+            print(*answer_list, sep = "\n")
+            print("\n")
 if __name__ == '__main__':
     main()
