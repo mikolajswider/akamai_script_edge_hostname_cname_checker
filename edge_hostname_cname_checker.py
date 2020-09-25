@@ -87,7 +87,7 @@ def main():
     parser.add_argument("edge_hostname", default=None, type=str, help="Edge Hostname to be tested")
     env_edgerc = os.getenv("AKAMAI_EDGERC")
     default_edgerc = env_edgerc if env_edgerc else os.path.join(os.path.expanduser("~"), ".edgerc")
-    parser.add_argument("--edgerc_path", help="Full Path to .edgerc File", default=default_edgerc)
+    parser.add_argument("--edgerc_path", help="Full Path to .edgerc File including the filename", default=default_edgerc)
     env_edgerc_section = os.getenv("AKAMAI_EDGERC_SECTION")
     default_edgerc_section = env_edgerc_section if env_edgerc_section else "default"
     parser.add_argument("--section", help="Section Name in .edgerc File", required=False, default=default_edgerc_section)
