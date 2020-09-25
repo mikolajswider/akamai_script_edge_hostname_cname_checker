@@ -149,7 +149,7 @@ def main():
                     nx_domain_list = nx_domain_list + [hostname]
                 except dns.resolver.NoNameservers:
                     warning = True
-                    noname_list = noname_list + [hostname]
+                    no_name_list = no_name_list + [hostname]
                 else:
                     if edge_hostname in str(output.rrset):
                         answer_list =  answer_list + [hostname]
