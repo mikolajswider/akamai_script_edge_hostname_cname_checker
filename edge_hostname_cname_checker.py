@@ -61,9 +61,14 @@ def get_property_hostnames(latestVersion, propertyId, contractId, groupId, path,
     # getting the list of groups and contracts assosciated to groups: https://developer.akamai.com/api/core_features/property_manager/v1.html#getgroups
     http_response = http_request.get(urljoin(baseurl, '/papi/v1/properties/'+propertyId+'/versions/'+str(latestVersion)+'/hostnames?contractId='+contractId+'&groupId='+groupId+'&validateHostnames=false&accountSwitchKey='+switchkey))
     http_status_code= http_response.status_code
-    http_content = json.loads(http_response.text)
-    for item in http_content['hostnames']['items']:
-        property_hostnames_list=property_hostnames_list+[item['cnameFrom']]
+    http_content = json.loads(http_response.text)    
+    try:
+        test = http_content['hostnames']['items']
+    except KeyError:
+        pass
+    else:
+        for item in http_content['hostnames']['items']:
+            property_hostnames_list=property_hostnames_list+[item['cnameFrom']]
     return(property_hostnames_list)
 
 def main():
