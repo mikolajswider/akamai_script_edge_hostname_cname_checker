@@ -58,7 +58,14 @@ def get_property_hostnames(latestVersion, propertyId, contractId, groupId, path,
     headers ={}
     headers['PAPI-Use-Prefixes']="true"
     http_request.headers = headers
-    # getting the list of groups and contracts assosciated to groups: https://developer.akamai.com/api/core_features/property_manager/v1.html#getgroups
+    # getting the list of groups and contracts asso
+    
+    
+    
+    
+    
+    
+    ciated to groups: https://developer.akamai.com/api/core_features/property_manager/v1.html#getgroups
     http_response = http_request.get(urljoin(baseurl, '/papi/v1/properties/'+propertyId+'/versions/'+str(latestVersion)+'/hostnames?contractId='+contractId+'&groupId='+groupId+'&validateHostnames=false&accountSwitchKey='+switchkey))
     http_status_code= http_response.status_code
     http_content = json.loads(http_response.text)    
@@ -118,7 +125,7 @@ def main():
         headers ={}
         headers['PAPI-Use-Prefixes']="true"
         http_request.headers = headers
-        print('\nGetting the list of all groups and all assosciated contracts...')
+        print('\nGetting the list of all groups and all associated contracts...')
         #https://developer.akamai.com/api/core_features/property_manager/v1.html#getgroups
         http_response = http_request.get(urljoin(baseurl, '/papi/v1/groups?accountSwitchKey='+switchkey))
         http_status_code= http_response.status_code
