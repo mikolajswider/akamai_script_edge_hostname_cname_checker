@@ -75,8 +75,13 @@ def main():
     
     # defining variables
     dict_list = []
+    
+    # list of all property hostnames within the account
     property_hostnames_list = []
+    
+    # list of all property hostnames within the account that are cnamed to the input edge hostname
     answer_list = []
+    
     nb_groups = 0
     nb_contracts = 0
     nb_properties = 0
@@ -156,7 +161,7 @@ def main():
                     warning = True
                     no_name_list = no_name_list + [hostname]
                 else:
-                    if edge_hostname in str(output.rrset):
+                    if (" " + edge_hostname) in str(output.rrset):
                         answer_list =  answer_list + [hostname]
                         
             # Displaying hostnames for which DNS resolution failed
